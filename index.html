@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Animal Buttons</title>
+</head>
+
+<body>
+  
+  <div id="buttons"></div>
+  <div id="gifs-appear-here">
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    var topics = ["parrot", "soccer", "basketball", "sweden", "rifles", "pistols", "gaming", "rocketman", "john-wick", "burn-notice"]
+    var buttons = $('#buttons');
+    var still = "still"
+    for (var i = 0; i < topics.length; i++) {
+      buttons.append('<input type="button" class="button" id="button' + i + '" value="' + topics[i] + '"  ' + 'data-topic="' + topics[i] + '"/>');
+    }
+// this function is pulling from the array, and then creating a button with a class, id, and a data topic. Alsp calling the api as well
+
+    function gifSetup() {
+      var topic = $(this).attr("data-topic");
+      console.log(topic)
+      console.log(this)
+      var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+        topic + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
+
+      $.ajax({
+        url: queryURL,
+        method: "GET"
+      }).then(function (response) {
+
+        var results = response.data
+// this is displaying the gifs related to the arrays up above.
+        for (var i = 0; i < results.length; i++) {
+          var topicSpan = $("<span>")
+          var p = $("<p>").text(results[i])
+          var topicImage = $("<img>");
+          topicImage.attr("src", results[i].images.fixed_height.url);
+          topicImage.attr("src", results[i].images.still);
+          topicImage.append(p);
+          topicSpan.append(topicImage);
+          $("#gifs-appear-here").prepend(topicSpan);
+        }
+
+      });
+    };
+    $(document).on("click", ".button", gifSetup)
+// THis will be the click function that will start and stop the gifs. (Currently they dont stop. They just play.)
+    $("<img>").on("click", function () {
+
+      var state = $(this).attr("data-state");
+      if (state === "still") {
+        $(this).attr("src", $(this).attr("data-animate"));
+        $(this).attr("data-state", "animate");
+      } else {
+        $(this).attr("src", $(this).attr("data-still"));
+        $(this).attr("data-state", "still");
+      }
+    });
+    // I still need the gifs to start and stop.
+  // I need to add a place to insert user info, to add more buttons.
+  // I want it to stop displaying the images and replace them with the current button that is clicked 
+  // so that It doesn't keep the irrelevant gifs displayed.
+  </script>
+</body>
+
+</html>
